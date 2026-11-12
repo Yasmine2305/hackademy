@@ -1,0 +1,41 @@
+/* ==========================================================================
+   Ajouts de l'objectif 3 : éléments qui n'existaient pas dans le prototype
+   (notifications, sous-titres vidéo, erreurs de formulaire, zone sensible).
+   ========================================================================== */
+
+/* Notifications empilées en bas à droite */
+.toasts{position:fixed;right:20px;bottom:20px;z-index:80;display:flex;flex-direction:column;gap:8px;max-width:min(380px,calc(100vw - 32px));pointer-events:none}
+.ntf{pointer-events:auto;display:flex;gap:10px;align-items:flex-start;text-align:left;padding:12px 14px;border:1px solid var(--line2);border-radius:var(--r2);background:rgba(11,20,34,.94);backdrop-filter:blur(14px);box-shadow:var(--shadow);font:400 13px/1.45 var(--mono);color:var(--fg);animation:ntf-in .22s ease-out}
+.ntf b{flex:none;font-weight:700}
+.ntf.byte{border-color:var(--green)}.ntf.byte b{color:var(--green)}
+.ntf.success{border-color:var(--green);background:rgba(8,32,22,.95)}.ntf.success b{color:var(--green)}
+.ntf.error{border-color:var(--red)}.ntf.error b{color:var(--red)}
+.ntf.info b{color:var(--cyan)}
+@keyframes ntf-in{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}
+@media (max-width:640px){.toasts{left:16px;right:16px;bottom:76px;max-width:none}}
+
+/* Vidéo du briefing : barre de lecture et sous-titres */
+.vbar i{background:linear-gradient(var(--green),var(--green)) no-repeat,var(--line2);background-size:0 100%;transition:background-size 1s linear}
+.vid .subt{position:absolute;left:12px;right:12px;bottom:10px;margin:0;padding:6px 10px;background:rgba(0,0,0,.72);border-radius:4px;font:500 13px/1.4 var(--mono);color:var(--white);text-align:center}
+
+/* Formulaires : champs invalides */
+.field input[aria-invalid="true"],.field textarea[aria-invalid="true"]{border-color:var(--red)}
+.field small.c-r{color:var(--red)}
+form .fb{margin-top:16px}
+
+/* Zone sensible (suppression de compte) */
+.btn.danger{border-color:var(--red);color:var(--red)}
+.btn.danger:hover{background:rgba(255,77,94,.12)}
+.danger-zone{border-top:1px dashed var(--line2);margin-top:16px;padding-top:16px}
+
+/* Lignes de journal : focus clavier visible */
+.ll:focus-visible{outline:2px solid var(--cyan);outline-offset:-2px}
+.btn:disabled{cursor:not-allowed}
+
+/* Page 404 */
+.nf{padding:64px 0 24px}
+.nf .code{font:700 clamp(64px,14vw,140px)/1 var(--disp);color:var(--amber);letter-spacing:.04em}
+
+/* Progression : colonne identité + colonne détails */
+.g-prog{grid-template-columns:minmax(0,340px) minmax(0,1fr)}
+@media (max-width:1040px){.g-prog{grid-template-columns:minmax(0,1fr)}}
