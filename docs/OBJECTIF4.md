@@ -201,9 +201,9 @@ ni erreur JavaScript ni débordement horizontal (en ordinateur, tablette 768 px 
 | Safari (WebKit 27) | WebKit | **11 / 11** (+2 sans objet) |
 | Téléphone Android (Pixel 7) | Blink, tactile | **9 / 9** (+4 sans objet) |
 | iPhone 14 | WebKit, tactile | **9 / 9** (+4 sans objet) |
-| Firefox 157 | Gecko | **non exécuté** : voir ci-dessous |
+| Firefox 157 | Gecko | **12 / 12** (+1 sans objet) : voir ci-dessous |
 
-**93 tests réussis, 0 échec** (dernier passage : 17 novembre 2026). Les tests « sans objet » sont sautés
+**105 tests réussis, 0 échec** sur 9 configurations (dernier passage : 17 novembre 2026). Les tests « sans objet » sont sautés
 volontairement : pas de clavier ni de barre de recherche sur téléphone ; sous Safari, la touche Tab ne
 parcourt pas les liens par défaut (réglage du système) ; le test du zoom par pincement ne peut être simulé
 que dans Chromium sur ordinateur (et pas sur le banc 4K, où la 3D est dessinée une seule fois).
@@ -221,19 +221,10 @@ Le rapport détaillé du dernier passage est dans
 - sous WebKit, la 3D est dessinée en mode « animations réduites » : sans carte graphique,
   le WebKit de test calcule chaque image au processeur et saturait la machine.
 
-**Firefox** : le moteur Firefox de Playwright ne démarre pas sur ce PC. Windows refuse de le lancer
-(« configuration côte-à-côte incorrecte », assemblage `mozglue` introuvable), alors que ses fichiers sont
-présents et que le « Visual C++ Redistributable » 2015-2022 est installé : l’installation de Playwright
-est à refaire (`npx playwright install --force firefox`), puis `npx playwright test --project=firefox`.
-Le site n’utilise que des fonctions standard, également prises en charge par Firefox
-(React, WebGL, CSS Grid, `fetch`).
+**Firefox** : testé séparément. L’ancienne installation du Firefox de Playwright sur le PC de test était
+abîmée : Windows refusait de la lancer (« configuration côte-à-côte incorrecte », assemblage `mozglue`
+introuvable). Après une réinstallation (`npx playwright install --force firefox`), les 12 tests passent,
+sur ce PC comme sur celui d’une deuxième membre de l’équipe (`npx playwright test --project=firefox`).
+Le rapport HTML ci-dessus couvre les 8 autres configurations : un passage limité à Firefox le remplace.
 
 Lancer les tests : `npm run test:e2e` (première fois : `npx playwright install chromium firefox webkit`).
-
----
-
-## 7. Ce qui reste à faire par l’équipe
-
-- **Firefox** : réinstaller le Firefox de Playwright (voir ci-dessus), puis lancer les tests Firefox.
-- **Répartition des rôles** : à compléter dans [`ORGANISATION.md`](ORGANISATION.md) selon le travail réel
-  de chacune.

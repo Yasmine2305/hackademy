@@ -192,7 +192,7 @@ hackademy/
     ├── API.md              référence de l'API REST
     ├── OBJECTIF4.md        rapport de l'objectif 4 (optimisations, scores avant/après)
     ├── lighthouse/         rapports Lighthouse finaux (à ouvrir dans un navigateur)
-    └── ORGANISATION.md     répartition des tâches, conventions Git
+    └── tests-navigateurs/  rapport des tests multi-navigateurs (Playwright)
 ```
 
 Conventions : composants React en `PascalCase.jsx`, utilitaires en `camelCase.js`, routes d’URL en
