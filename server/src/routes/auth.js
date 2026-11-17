@@ -47,9 +47,13 @@ export function authRoutes(repo) {
     const view = buildView(clean);
     if (view.complete && clean.finishedAt) {
       const { username } = repo.findUserById(userId);
-      const durationS = clean.startedAt ? Math.round((Date.parse(clean.finishedAt) - Date.parse(clean.startedAt)) / 1000) : null;
+      const durationS = clean.startedAt
+        ? Math.round((Date.parse(clean.finishedAt) - Date.parse(clean.startedAt)) / 1000)
+        : null;
       repo.addReport(userId, {
-        caseId: '0417', score: view.score, durationS,
+        caseId: '0417',
+        score: view.score,
+        durationS,
         sha256: reportHash({ username, score: view.score, finishedAt: clean.finishedAt }),
       });
     }
@@ -92,6 +96,27 @@ export function authRoutes(repo) {
     const ok = typeof req.body?.password === 'string' && (await bcrypt.compare(req.body.password, full.password_hash));
     if (!ok) return res.status(401).json({ error: 'Mot de passe incorrect.' });
     repo.deleteUser(req.user.id);
+    res.status(204).end();
+  });
+
+  /** Mise à jour du mot de passe : l'ancien est exigé, les autres appareils sont déconnectés. */
+  r.patch('/password', requireAuth, limiter, async (req, res) => {
+    const { current, next } = req.body || {};
+    const full = repo.findUserByName(req.user.username);
+    const ok = typeof current === 'string' && (await bcrypt.compare(current, full.password_hash));
+    if (!ok)
+      return res.status(401).json({ error: 'Mot de passe actuel incorrect.', fields: { current: 'Incorrect.' } });
+    if (typeof next !== 'string' || next.length < MIN_PASSWORD || next.length > 128) {
+      return res
+        .status(400)
+        .json({ error: 'Nouveau mot de passe trop court.', fields: { next: `${MIN_PASSWORD} caractères minimum.` } });
+    }
+    if (next === current) {
+      return res
+        .status(400)
+        .json({ error: 'Le nouveau mot de passe doit être différent.', fields: { next: 'Identique à l’actuel.' } });
+    }
+    repo.updatePassword(req.user.id, await bcrypt.hash(next, 10), req.token);
     res.status(204).end();
   });
 

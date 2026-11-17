@@ -11,8 +11,12 @@ export function AuthProvider({ children }) {
 
   // au chargement : un jeton existe-t-il encore côté serveur ?
   useEffect(() => {
-    if (!tokenStore.get()) { setReady(true); return; }
-    api.me()
+    if (!tokenStore.get()) {
+      setReady(true);
+      return;
+    }
+    api
+      .me()
       .then((r) => setUser(r.user))
       .catch(() => tokenStore.clear())
       .finally(() => setReady(true));
@@ -29,7 +33,11 @@ export function AuthProvider({ children }) {
   const register = useCallback((u, p) => api.register(u, p, guestStore.load()).then(open), [open]);
 
   const logout = useCallback(async () => {
-    try { await api.logout(); } catch { /* jeton déjà expiré */ }
+    try {
+      await api.logout();
+    } catch {
+      /* jeton déjà expiré */
+    }
     tokenStore.clear();
     setUser(null);
   }, []);
@@ -40,9 +48,11 @@ export function AuthProvider({ children }) {
     setUser(null);
   }, []);
 
+  const changePassword = useCallback((current, next) => api.changePassword(current, next), []);
+
   const value = useMemo(
-    () => ({ user, ready, login, register, logout, deleteAccount }),
-    [user, ready, login, register, logout, deleteAccount],
+    () => ({ user, ready, login, register, logout, deleteAccount, changePassword }),
+    [user, ready, login, register, logout, deleteAccount, changePassword],
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

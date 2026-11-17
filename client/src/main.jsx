@@ -5,8 +5,12 @@ import App from './App.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
 import { GameProvider } from './context/GameContext.jsx';
 import { ToastProvider } from './context/ToastContext.jsx';
+import './assets/fonts.js';
 import './styles/global.css';
 import './styles/additions.css';
+import { initUiScale } from './utils/uiScale.js';
+
+initUiScale();
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

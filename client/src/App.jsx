@@ -1,8 +1,10 @@
 import { lazy, Suspense } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useLocation } from 'react-router-dom';
 import Layout from './components/layout/Layout.jsx';
 import Ambient from './components/three/Ambient.jsx';
 import { Loading } from './components/ui/ui.jsx';
+import { PageSkeleton } from './components/ui/Skeleton.jsx';
+import ErrorBoundary from './components/ui/ErrorBoundary.jsx';
 import { useGame } from './context/GameContext.jsx';
 
 // une page = un fichier, chargé à la demande (code splitting)
@@ -20,7 +22,7 @@ const Charte = lazy(() => import('./pages/Charte.jsx'));
 const NotFound = lazy(() => import('./pages/NotFound.jsx'));
 
 export default function App() {
-  const { scenario, state, error } = useGame();
+  const { scenario, state, error, retry } = useGame();
   // on attend seulement le tout premier chargement ; ensuite les pages restent montées
   const ready = Boolean(scenario && state);
 
@@ -31,21 +33,105 @@ export default function App() {
         <Route element={<Layout />}>
           {ready ? (
             <>
-              <Route index element={<Page><Accueil /></Page>} />
-              <Route path="acces" element={<Page><Acces /></Page>} />
-              <Route path="briefing" element={<Page><Briefing /></Page>} />
-              <Route path="centre" element={<Page><Centre /></Page>} />
-              <Route path="centre/mission-1" element={<Page><Mission1 /></Page>} />
-              <Route path="centre/mission-2" element={<Page><Mission2 /></Page>} />
-              <Route path="centre/mission-3" element={<Page><Mission3 /></Page>} />
-              <Route path="rapport" element={<Page><Rapport /></Page>} />
-              <Route path="progression" element={<Page><Progression /></Page>} />
-              <Route path="a-propos" element={<Page><APropos /></Page>} />
-              <Route path="charte" element={<Page><Charte /></Page>} />
-              <Route path="*" element={<Page><NotFound /></Page>} />
+              <Route
+                index
+                element={
+                  <Page>
+                    <Accueil />
+                  </Page>
+                }
+              />
+              <Route
+                path="acces"
+                element={
+                  <Page>
+                    <Acces />
+                  </Page>
+                }
+              />
+              <Route
+                path="briefing"
+                element={
+                  <Page>
+                    <Briefing />
+                  </Page>
+                }
+              />
+              <Route
+                path="centre"
+                element={
+                  <Page>
+                    <Centre />
+                  </Page>
+                }
+              />
+              <Route
+                path="centre/mission-1"
+                element={
+                  <Page>
+                    <Mission1 />
+                  </Page>
+                }
+              />
+              <Route
+                path="centre/mission-2"
+                element={
+                  <Page>
+                    <Mission2 />
+                  </Page>
+                }
+              />
+              <Route
+                path="centre/mission-3"
+                element={
+                  <Page>
+                    <Mission3 />
+                  </Page>
+                }
+              />
+              <Route
+                path="rapport"
+                element={
+                  <Page>
+                    <Rapport />
+                  </Page>
+                }
+              />
+              <Route
+                path="progression"
+                element={
+                  <Page>
+                    <Progression />
+                  </Page>
+                }
+              />
+              <Route
+                path="a-propos"
+                element={
+                  <Page>
+                    <APropos />
+                  </Page>
+                }
+              />
+              <Route
+                path="charte"
+                element={
+                  <Page>
+                    <Charte />
+                  </Page>
+                }
+              />
+              <Route
+                path="*"
+                element={
+                  <Page>
+                    <NotFound />
+                  </Page>
+                }
+              />
             </>
           ) : (
-            <Route path="*" element={<Loading error={error} />} />
+            <Route path="*" element={<Loading error={error} onRetry={retry} />} />
           )}
         </Route>
       </Routes>
@@ -53,6 +139,12 @@ export default function App() {
   );
 }
 
+/** Chaque page : squelette pendant son chargement, filet de sécurité en cas d’erreur. */
 function Page({ children }) {
-  return <Suspense fallback={<Loading />}>{children}</Suspense>;
+  const { pathname } = useLocation();
+  return (
+    <ErrorBoundary resetKey={pathname}>
+      <Suspense fallback={<PageSkeleton />}>{children}</Suspense>
+    </ErrorBoundary>
+  );
 }

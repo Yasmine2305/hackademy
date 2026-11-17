@@ -33,10 +33,15 @@ export function useTilt() {
       const y = (e.clientY - b.top) / b.height - 0.5;
       c.style.transform = `perspective(900px) rotateY(${x * 7}deg) rotateX(${-y * 7}deg) translateZ(6px)`;
     };
-    const leave = () => { c.style.transform = ''; };
+    const leave = () => {
+      c.style.transform = '';
+    };
     c.addEventListener('pointermove', move);
     c.addEventListener('pointerleave', leave);
-    return () => { c.removeEventListener('pointermove', move); c.removeEventListener('pointerleave', leave); };
+    return () => {
+      c.removeEventListener('pointermove', move);
+      c.removeEventListener('pointerleave', leave);
+    };
   }, []);
   return ref;
 }
@@ -44,8 +49,37 @@ export function useTilt() {
 /** Garde la valeur précédente d'une variable entre deux rendus. */
 export function usePrevious(value) {
   const ref = useRef();
-  useEffect(() => { ref.current = value; }, [value]);
+  useEffect(() => {
+    ref.current = value;
+  }, [value]);
   return ref.current;
 }
 
 export { reduced as prefersReducedMotion };
+
+/**
+ * Charge une donnée asynchrone (appel d'API) et expose son état :
+ *   const { data, loading, error, reload } = useAsync(() => api.leaderboard(), [savedAt]);
+ * Les réponses arrivées après le démontage du composant sont ignorées.
+ */
+export function useAsync(fn, deps = []) {
+  const [state, setState] = useState({ data: null, loading: true, error: null });
+  const [tick, setTick] = useState(0);
+  const fnRef = useRef(fn);
+  fnRef.current = fn;
+
+  useEffect(() => {
+    let alive = true;
+    setState((s) => ({ ...s, loading: true, error: null }));
+    Promise.resolve()
+      .then(() => fnRef.current())
+      .then((data) => alive && setState({ data, loading: false, error: null }))
+      .catch((error) => alive && setState({ data: null, loading: false, error }));
+    return () => {
+      alive = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [...deps, tick]);
+
+  return { ...state, reload: () => setTick((t) => t + 1) };
+}

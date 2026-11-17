@@ -5,9 +5,27 @@
 const TOKEN_KEY = 'hackademy.token';
 
 export const tokenStore = {
-  get() { try { return localStorage.getItem(TOKEN_KEY); } catch { return null; } },
-  set(t) { try { localStorage.setItem(TOKEN_KEY, t); } catch { /* navigation privée */ } },
-  clear() { try { localStorage.removeItem(TOKEN_KEY); } catch { /* idem */ } },
+  get() {
+    try {
+      return localStorage.getItem(TOKEN_KEY);
+    } catch {
+      return null;
+    }
+  },
+  set(t) {
+    try {
+      localStorage.setItem(TOKEN_KEY, t);
+    } catch {
+      /* navigation privée */
+    }
+  },
+  clear() {
+    try {
+      localStorage.removeItem(TOKEN_KEY);
+    } catch {
+      /* idem */
+    }
+  },
 };
 
 export class ApiError extends Error {
@@ -31,7 +49,11 @@ async function request(method, path, body) {
   }
   let data = null;
   if (res.status !== 204) {
-    try { data = await res.json(); } catch { /* réponse vide */ }
+    try {
+      data = await res.json();
+    } catch {
+      /* réponse vide */
+    }
   }
   if (!res.ok) throw new ApiError(data?.error || `Erreur ${res.status}`, res.status, data?.fields);
   return data;
@@ -45,6 +67,7 @@ export const api = {
   me: () => request('GET', '/auth/me'),
   logout: () => request('POST', '/auth/logout'),
   deleteAccount: (password) => request('DELETE', '/auth/me', { password }),
+  changePassword: (current, next) => request('PATCH', '/auth/password', { current, next }),
 
   getGame: () => request('GET', '/game'),
   evaluate: (state) => request('POST', '/game/evaluate', { state }),
@@ -53,6 +76,7 @@ export const api = {
   snapshots: () => request('GET', '/progress/snapshots'),
   restore: (id) => request('POST', `/progress/snapshots/${id}/restore`),
   reports: () => request('GET', '/progress/reports'),
+  leaderboard: (limit = 10) => request('GET', `/leaderboard?limit=${limit}`),
 
   contact: (email, message) => request('POST', '/contact', { email, message }),
 };

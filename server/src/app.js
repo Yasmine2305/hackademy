@@ -1,4 +1,5 @@
 import express from 'express';
+import compression from 'compression';
 import fs from 'node:fs';
 import path from 'node:path';
 import { createRepository } from './db/database.js';
@@ -27,6 +28,8 @@ export function createApp({ db, staticDir } = {}) {
     });
     next();
   });
+  // compression gzip de toutes les réponses texte (JS, CSS, JSON) : −70 % de poids transféré
+  app.use(compression());
   app.use(express.json({ limit: '64kb' }));
 
   const api = express.Router();
@@ -40,8 +43,15 @@ export function createApp({ db, staticDir } = {}) {
 
   // en production : le serveur distribue aussi le site React compilé
   if (staticDir && fs.existsSync(path.join(staticDir, 'index.html'))) {
+    // fichiers de /assets : leur nom contient une empreinte (index-CgkFiLrJ.js),
+    // ils ne changent donc jamais → cache navigateur d'un an.
+    app.use('/assets', express.static(path.join(staticDir, 'assets'), { immutable: true, maxAge: '1y' }));
     app.use(express.static(staticDir, { index: false, maxAge: '1h' }));
-    app.get(/^\/(?!api\/).*/, (_req, res) => res.sendFile(path.join(staticDir, 'index.html')));
+    // index.html est toujours revalidé, pour récupérer la dernière version du site
+    app.get(/^\/(?!api\/).*/, (_req, res) => {
+      res.set('Cache-Control', 'no-cache');
+      res.sendFile(path.join(staticDir, 'index.html'));
+    });
   }
 
   // gestion centralisée des erreurs

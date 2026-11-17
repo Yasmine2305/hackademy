@@ -11,11 +11,16 @@ function play(actions, state = blankState()) {
 }
 
 const SOLVE_M1 = [
-  { type: 'tagLog', line: 2 }, { type: 'tagLog', line: 6 }, { type: 'tagLog', line: 7 }, { type: 'tagLog', line: 10 },
+  { type: 'tagLog', line: 2 },
+  { type: 'tagLog', line: 6 },
+  { type: 'tagLog', line: 7 },
+  { type: 'tagLog', line: 10 },
   { type: 'answerQ1', choice: 1 },
 ];
 const SOLVE_M2 = [
-  { type: 'setRecipe', ops: ['b64', 'rot'] }, { type: 'markEntity', entity: 'ip' }, { type: 'markEntity', entity: 'hr' },
+  { type: 'setRecipe', ops: ['b64', 'rot'] },
+  { type: 'markEntity', entity: 'ip' },
+  { type: 'markEntity', entity: 'hr' },
 ];
 const SOLVE_M3 = [
   ...['a', 'b', 'c', 'd', 'e'].map((card, slot) => ({ type: 'placeCard', card, slot })),
@@ -48,12 +53,18 @@ test('marquer une ligne anodine coûte une erreur', () => {
 });
 
 test('les lignes plausibles (9, 11) ne pénalisent pas', () => {
-  const { state } = play([{ type: 'tagLog', line: 9 }, { type: 'tagLog', line: 11 }]);
+  const { state } = play([
+    { type: 'tagLog', line: 9 },
+    { type: 'tagLog', line: 11 },
+  ]);
   assert.equal(state.errors, 0);
 });
 
 test('une seule ligne par octet : la rafale SSH remplace la précédente', () => {
-  const { state } = play([{ type: 'tagLog', line: 2 }, { type: 'tagLog', line: 3 }]);
+  const { state } = play([
+    { type: 'tagLog', line: 2 },
+    { type: 'tagLog', line: 3 },
+  ]);
   assert.deepEqual(state.tags, [3]);
 });
 
@@ -110,8 +121,13 @@ test('le score ne descend jamais sous zéro', () => {
 
 test('sanitizeState ignore les valeurs forgées par le client', () => {
   const s = sanitizeState({
-    tags: [2, 999, 'x', 2], rec: ['b64', 'rm -rf'], ents: ['ip', 'admin'],
-    chain: ['a', 'a', 'z', null, 'e'], checked: true, errors: -5, hints: { m1: [0, 7] },
+    tags: [2, 999, 'x', 2],
+    rec: ['b64', 'rm -rf'],
+    ents: ['ip', 'admin'],
+    chain: ['a', 'a', 'z', null, 'e'],
+    checked: true,
+    errors: -5,
+    hints: { m1: [0, 7] },
   });
   assert.deepEqual(s.tags, [2]);
   assert.deepEqual(s.rec, ['b64']);

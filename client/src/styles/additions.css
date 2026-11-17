@@ -4,38 +4,311 @@
    ========================================================================== */
 
 /* Notifications empilées en bas à droite */
-.toasts{position:fixed;right:20px;bottom:20px;z-index:80;display:flex;flex-direction:column;gap:8px;max-width:min(380px,calc(100vw - 32px));pointer-events:none}
-.ntf{pointer-events:auto;display:flex;gap:10px;align-items:flex-start;text-align:left;padding:12px 14px;border:1px solid var(--line2);border-radius:var(--r2);background:rgba(11,20,34,.94);backdrop-filter:blur(14px);box-shadow:var(--shadow);font:400 13px/1.45 var(--mono);color:var(--fg);animation:ntf-in .22s ease-out}
-.ntf b{flex:none;font-weight:700}
-.ntf.byte{border-color:var(--green)}.ntf.byte b{color:var(--green)}
-.ntf.success{border-color:var(--green);background:rgba(8,32,22,.95)}.ntf.success b{color:var(--green)}
-.ntf.error{border-color:var(--red)}.ntf.error b{color:var(--red)}
-.ntf.info b{color:var(--cyan)}
-@keyframes ntf-in{from{transform:translateY(8px);opacity:0}to{transform:none;opacity:1}}
-@media (max-width:640px){.toasts{left:16px;right:16px;bottom:76px;max-width:none}}
+.toasts {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 80;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: min(380px, calc(100vw - 32px));
+  pointer-events: none;
+}
+.ntf {
+  pointer-events: auto;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  text-align: left;
+  padding: 12px 14px;
+  border: 1px solid var(--line2);
+  border-radius: var(--r2);
+  background: rgba(11, 20, 34, 0.94);
+  backdrop-filter: blur(14px);
+  box-shadow: var(--shadow);
+  font: 400 13px/1.45 var(--mono);
+  color: var(--fg);
+  animation: ntf-in 0.22s ease-out;
+}
+.ntf b {
+  flex: none;
+  font-weight: 700;
+}
+.ntf.byte {
+  border-color: var(--green);
+}
+.ntf.byte b {
+  color: var(--green);
+}
+.ntf.success {
+  border-color: var(--green);
+  background: rgba(8, 32, 22, 0.95);
+}
+.ntf.success b {
+  color: var(--green);
+}
+.ntf.error {
+  border-color: var(--red);
+}
+.ntf.error b {
+  color: var(--red);
+}
+.ntf.info b {
+  color: var(--cyan);
+}
+@keyframes ntf-in {
+  from {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@media (max-width: 640px) {
+  .toasts {
+    left: 16px;
+    right: 16px;
+    bottom: 76px;
+    max-width: none;
+  }
+}
 
 /* Vidéo du briefing : barre de lecture et sous-titres */
-.vbar i{background:linear-gradient(var(--green),var(--green)) no-repeat,var(--line2);background-size:0 100%;transition:background-size 1s linear}
-.vid .subt{position:absolute;left:12px;right:12px;bottom:10px;margin:0;padding:6px 10px;background:rgba(0,0,0,.72);border-radius:4px;font:500 13px/1.4 var(--mono);color:var(--white);text-align:center}
+.vbar i {
+  background:
+    linear-gradient(var(--green), var(--green)) no-repeat,
+    var(--line2);
+  background-size: 0 100%;
+  transition: background-size 1s linear;
+}
+.vid .subt {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 10px;
+  margin: 0;
+  padding: 6px 10px;
+  background: rgba(0, 0, 0, 0.72);
+  border-radius: 4px;
+  font: 500 13px/1.4 var(--mono);
+  color: var(--white);
+  text-align: center;
+}
 
 /* Formulaires : champs invalides */
-.field input[aria-invalid="true"],.field textarea[aria-invalid="true"]{border-color:var(--red)}
-.field small.c-r{color:var(--red)}
-form .fb{margin-top:16px}
+.field input[aria-invalid='true'],
+.field textarea[aria-invalid='true'] {
+  border-color: var(--red);
+}
+.field small.c-r {
+  color: var(--red);
+}
+form .fb {
+  margin-top: 16px;
+}
 
 /* Zone sensible (suppression de compte) */
-.btn.danger{border-color:var(--red);color:var(--red)}
-.btn.danger:hover{background:rgba(255,77,94,.12)}
-.danger-zone{border-top:1px dashed var(--line2);margin-top:16px;padding-top:16px}
+.btn.danger {
+  border-color: var(--red);
+  color: var(--red);
+}
+.btn.danger:hover {
+  background: rgba(255, 77, 94, 0.12);
+}
+.danger-zone {
+  border-top: 1px dashed var(--line2);
+  margin-top: 16px;
+  padding-top: 16px;
+}
 
 /* Lignes de journal : focus clavier visible */
-.ll:focus-visible{outline:2px solid var(--cyan);outline-offset:-2px}
-.btn:disabled{cursor:not-allowed}
+.ll:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: -2px;
+}
+.btn:disabled {
+  cursor: not-allowed;
+}
 
 /* Page 404 */
-.nf{padding:64px 0 24px}
-.nf .code{font:700 clamp(64px,14vw,140px)/1 var(--disp);color:var(--amber);letter-spacing:.04em}
+.nf {
+  padding: 64px 0 24px;
+}
+.nf .code {
+  font: 700 clamp(64px, 14vw, 140px) / 1 var(--disp);
+  color: var(--amber);
+  letter-spacing: 0.04em;
+}
 
 /* Progression : colonne identité + colonne détails */
-.g-prog{grid-template-columns:minmax(0,340px) minmax(0,1fr)}
-@media (max-width:1040px){.g-prog{grid-template-columns:minmax(0,1fr)}}
+.g-prog {
+  grid-template-columns: minmax(0, 340px) minmax(0, 1fr);
+}
+@media (max-width: 1040px) {
+  .g-prog {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ==========================================================================
+   Objectif 4 : finitions UX/UI
+   ========================================================================== */
+
+/* Transition douce à chaque changement de page */
+main {
+  animation: page-in 0.28s ease-out both;
+}
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Indicateur de chargement dans un bouton */
+.spin {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-right: 8px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: -2px;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Squelettes de chargement */
+.skel {
+  display: block;
+  background: linear-gradient(90deg, var(--raise) 0%, var(--raise2) 50%, var(--raise) 100%);
+  background-size: 200% 100%;
+  animation: skel 1.4s ease-in-out infinite;
+}
+.skel-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.skel-pane {
+  padding: 48px 20px 24px;
+  min-height: 140px;
+}
+@keyframes skel {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* Scène 3D en cours de chargement : léger balayage au lieu d'un trou noir */
+.scene.loading3d {
+  background: linear-gradient(110deg, #060b14 30%, #0b1626 50%, #060b14 70%);
+  background-size: 200% 100%;
+  animation: skel 1.8s ease-in-out infinite;
+}
+
+/* Accessibilité : focus clavier toujours visible, cibles tactiles assez grandes */
+:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+.foot li a {
+  display: inline-block;
+  padding: 4px 0;
+  min-height: 24px;
+}
+.foot ul {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.pane > .t {
+  margin: 0;
+}
+
+/* Classement */
+.lb {
+  width: 100%;
+  border-collapse: collapse;
+  font: 400 13px var(--mono);
+}
+.lb th {
+  text-align: left;
+  color: var(--muted);
+  font-weight: 500;
+  padding: 0 8px 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+.lb td {
+  padding: 8px 8px 8px 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--fg);
+}
+.lb tr.me td {
+  color: var(--green);
+}
+.lb td.rk {
+  color: var(--amber);
+  width: 36px;
+}
+
+/* Tablette : le menu complet ne tient pas, on garde logo + recherche + compte et la barre d'onglets */
+@media (max-width: 1240px) and (min-width: 641px) {
+  .tabbar a {
+    min-height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  main,
+  .skel,
+  .scene.loading3d,
+  .spin {
+    animation: none;
+  }
+}
+
+/* Tablette : le rail d'octets passe sur deux lignes au lieu de déborder de l'écran */
+@media (max-width: 1040px) and (min-width: 641px) {
+  .rail .lbl {
+    display: none;
+  }
+  .rail .wrap {
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+  /* indicateurs du Centre : 2 colonnes, le chronomètre ne déborde plus */
+  .kpi {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Le squelette occupe au moins tout l'écran : le pied de page ne « saute » pas
+   quand la vraie page remplace le squelette (score CLS de Lighthouse). */
+.skel-page {
+  min-height: var(--vh, 100vh);
+}
+
+/* Charte sur téléphone : la légende passe au-dessus de l'exemple de police
+   (sinon la colonne de 220 px ne laisse que 92 px et le texte déborde, visible sous Safari) */
+@media (max-width: 640px) {
+  .ch-ty {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+  }
+}

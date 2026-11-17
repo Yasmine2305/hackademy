@@ -20,6 +20,7 @@ Toutes les erreurs ont la forme `{ "error": "message lisible" }` (plus `fields` 
 | GET 🔒 | `/auth/me` | — | `{ user }` |
 | POST 🔒 | `/auth/logout` | — | `204` |
 | DELETE 🔒 | `/auth/me` | `{ password }` | `204` (compte, progression, sauvegardes et rapports supprimés) |
+| PATCH 🔒 | `/auth/password` | `{ current, next }` | `204` (les autres sessions sont fermées) · `400` trop court ou identique · `401` mot de passe actuel faux |
 
 `guestState` : la partie jouée sans compte. Elle est reprise si le compte n’a pas encore de partie.
 
@@ -70,6 +71,12 @@ Score : `round(octets / 12 × 100) − 5 × indices − 4 × erreurs`, jamais n�
 | GET | `/progress/snapshots` | Les 3 derniers points de restauration |
 | POST | `/progress/snapshots/:id/restore` | `{ state, view, savedAt }` |
 | GET | `/progress/reports` | Rapports signés : score, durée, SHA-256 |
+
+## Classement
+
+| Méthode | Route | Réponse |
+|---|---|---|
+| GET | `/leaderboard?limit=10` | `{ entries: [{ username, score, duration_s, created_at }], players }` : meilleur rapport de chaque analyste, trié par score puis par temps. Aucune donnée privée. |
 
 ## Contact
 

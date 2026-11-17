@@ -9,8 +9,21 @@
  * Toute la logique « est-ce juste ? » vit ici, côté serveur.
  */
 import {
-  PACKET, PAYLOAD_OFFSET, WORD, LOG_TO_BYTE, LOG_PLAUSIBLE, Q1_ANSWER, RECIPE, ENTITIES,
-  CHAIN_ORDER, PROOFS, HINTS, REPORT, LOGS, CARDS, OPERATIONS,
+  PACKET,
+  PAYLOAD_OFFSET,
+  WORD,
+  LOG_TO_BYTE,
+  LOG_PLAUSIBLE,
+  Q1_ANSWER,
+  RECIPE,
+  ENTITIES,
+  CHAIN_ORDER,
+  PROOFS,
+  HINTS,
+  REPORT,
+  LOGS,
+  CARDS,
+  OPERATIONS,
 } from './scenario.js';
 
 export const BYTES = 12;
@@ -64,7 +77,10 @@ export function sanitizeState(raw) {
   if (Array.isArray(raw.chain) && raw.chain.length === 5) {
     const seen = new Set();
     s.chain = raw.chain.map((c) => {
-      if (CARD_IDS.includes(c) && !seen.has(c)) { seen.add(c); return c; }
+      if (CARD_IDS.includes(c) && !seen.has(c)) {
+        seen.add(c);
+        return c;
+      }
       return null;
     });
   }
@@ -94,7 +110,9 @@ export function sanitizeState(raw) {
 /** Tableau de 12 booléens : quels octets du paquet sont prouvés. */
 export function foundBytes(s) {
   const f = new Array(BYTES).fill(false);
-  s.tags.forEach((t) => { if (LOG_TO_BYTE[t] !== undefined) f[LOG_TO_BYTE[t]] = true; });
+  s.tags.forEach((t) => {
+    if (LOG_TO_BYTE[t] !== undefined) f[LOG_TO_BYTE[t]] = true;
+  });
   if (s.rec[0] === RECIPE[0]) f[4] = true;
   if (s.rec[0] === RECIPE[0] && s.rec[1] === RECIPE[1]) f[5] = true;
   if (s.ents.includes('ip')) f[6] = true;
@@ -149,7 +167,9 @@ export function buildView(s) {
     marks[t] = LOG_TO_BYTE[t] !== undefined ? PACKET[PAYLOAD_OFFSET + LOG_TO_BYTE[t]] : '?';
   });
   const missions = {};
-  [1, 2, 3].forEach((m) => { missions[m] = { done: missionDone(s, m, found), solved: missionSolved(s, m, found) }; });
+  [1, 2, 3].forEach((m) => {
+    missions[m] = { done: missionDone(s, m, found), solved: missionSolved(s, m, found) };
+  });
 
   let report = null;
   if (complete) {
@@ -167,7 +187,9 @@ export function buildView(s) {
   }
 
   return {
-    found: found.map((ok, i) => (ok ? { hex: PACKET[PAYLOAD_OFFSET + i], ch: WORD[i], t: PROOFS[i].t, s: PROOFS[i].s } : null)),
+    found: found.map((ok, i) =>
+      ok ? { hex: PACKET[PAYLOAD_OFFSET + i], ch: WORD[i], t: PROOFS[i].t, s: PROOFS[i].s } : null,
+    ),
     count,
     score,
     rank: rankFor(score, complete),
@@ -205,7 +227,10 @@ const ACTIONS = {
   tagLog(s, { line }, _now, ev) {
     if (!LOG_IDS.includes(line)) throw new GameError('Ligne de journal inconnue.');
     const i = s.tags.indexOf(line);
-    if (i >= 0) { s.tags.splice(i, 1); return; }
+    if (i >= 0) {
+      s.tags.splice(i, 1);
+      return;
+    }
     if (LOG_TO_BYTE[line] !== undefined) {
       // une seule ligne par octet : on remplace les autres lignes qui visent le même
       s.tags = s.tags.filter((t) => LOG_TO_BYTE[t] !== LOG_TO_BYTE[line]);
@@ -251,7 +276,8 @@ const ACTIONS = {
 
   placeCard(s, { card, slot }) {
     if (!CARD_IDS.includes(card)) throw new GameError('Carte inconnue.');
-    if (slot !== null && slot !== undefined && !(isInt(slot) && slot >= 0 && slot < 5)) throw new GameError('Étape inconnue.');
+    if (slot !== null && slot !== undefined && !(isInt(slot) && slot >= 0 && slot < 5))
+      throw new GameError('Étape inconnue.');
     s.chain = s.chain.map((c) => (c === card ? null : c));
     if (slot !== null && slot !== undefined) s.chain[slot] = card;
     s.checked = false;

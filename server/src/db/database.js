@@ -87,7 +87,23 @@ export function createRepository(db) {
 
     insertReport: db.prepare(`INSERT INTO reports (user_id, case_id, score, duration_s, sha256, created_at)
                               VALUES (?, ?, ?, ?, ?, ?)`),
-    listReports: db.prepare('SELECT id, case_id, score, duration_s, sha256, created_at FROM reports WHERE user_id = ? ORDER BY id DESC LIMIT 20'),
+    listReports: db.prepare(
+      'SELECT id, case_id, score, duration_s, sha256, created_at FROM reports WHERE user_id = ? ORDER BY id DESC LIMIT 20',
+    ),
+
+    // classement : le meilleur rapport de chaque analyste (score, puis temps le plus court)
+    leaderboard: db.prepare(`SELECT username, score, duration_s, created_at FROM (
+                               SELECT u.username, r.score, r.duration_s, r.created_at,
+                                      ROW_NUMBER() OVER (PARTITION BY r.user_id
+                                                         ORDER BY r.score DESC, r.duration_s ASC) AS rang
+                               FROM reports r JOIN users u ON u.id = r.user_id)
+                             WHERE rang = 1
+                             ORDER BY score DESC, duration_s ASC
+                             LIMIT ?`),
+    countPlayers: db.prepare('SELECT COUNT(DISTINCT user_id) AS n FROM reports'),
+
+    updatePassword: db.prepare('UPDATE users SET password_hash = ? WHERE id = ?'),
+    deleteOtherSessions: db.prepare('DELETE FROM sessions WHERE user_id = ? AND token <> ?'),
 
     insertMessage: db.prepare('INSERT INTO messages (email, body, created_at) VALUES (?, ?, ?)'),
   };
@@ -101,6 +117,12 @@ export function createRepository(db) {
     findUserByName: (username) => q.userByName.get(username) ?? null,
     findUserById: (id) => q.userById.get(id) ?? null,
     deleteUser: (id) => q.deleteUser.run(id),
+    /** Change le hachage du mot de passe et ferme les autres sessions ouvertes. */
+    updatePassword(id, hash, keepToken) {
+      q.updatePassword.run(hash, id);
+      q.deleteOtherSessions.run(id, keepToken);
+    },
+    leaderboard: (limit = 10) => ({ entries: q.leaderboard.all(limit), players: q.countPlayers.get().n }),
 
     createSession(token, userId, ttlMs) {
       const t = Date.now();

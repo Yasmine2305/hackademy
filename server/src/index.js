@@ -12,7 +12,7 @@ const STATIC_DIR = path.join(here, '..', '..', 'client', 'dist');
 const db = openDatabase(DB_FILE);
 const app = createApp({ db, staticDir: STATIC_DIR });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   const built = fs.existsSync(path.join(STATIC_DIR, 'index.html'));
   console.log('');
   console.log('  ==============================================');
@@ -27,3 +27,24 @@ app.listen(PORT, () => {
   console.log(`  (API interne : http://localhost:${PORT}/api - base : ${DB_FILE})`);
   console.log('');
 });
+
+/**
+ * Arrêt propre (Ctrl + C, fermeture de la fenêtre) : on recopie le journal
+ * hackademy.db-wal dans hackademy.db puis on ferme la base. Ainsi le fichier
+ * .db contient toutes les données et s'ouvre directement dans un visualiseur.
+ */
+let stopping = false;
+function shutdown() {
+  if (stopping) return;
+  stopping = true;
+  server.close();
+  try {
+    db.exec('PRAGMA wal_checkpoint(TRUNCATE);');
+    db.close();
+  } catch (e) {
+    console.error(e);
+  }
+  console.log('\n  Serveur arrete, base de donnees enregistree.');
+  process.exit(0);
+}
+['SIGINT', 'SIGTERM', 'SIGHUP'].forEach((sig) => process.on(sig, shutdown));

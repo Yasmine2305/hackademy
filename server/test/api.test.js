@@ -8,7 +8,9 @@ let base;
 
 before(async () => {
   const app = createApp({ db: openDatabase(':memory:') });
-  await new Promise((resolve) => { server = app.listen(0, resolve); });
+  await new Promise((resolve) => {
+    server = app.listen(0, resolve);
+  });
   base = `http://127.0.0.1:${server.address().port}/api`;
 });
 after(() => server.close());
@@ -53,7 +55,11 @@ test('inscription, partie sauvegardée, points de restauration et rapport', asyn
 
   // une partie commencée sans compte est reprise à l'inscription
   const guest = await call('POST', '/game/action', { state: null, action: { type: 'start' } });
-  const reg = await call('POST', '/auth/register', { username: 'agent_0417', password: 'correct-horse-battery', guestState: guest.body.state });
+  const reg = await call('POST', '/auth/register', {
+    username: 'agent_0417',
+    password: 'correct-horse-battery',
+    guestState: guest.body.state,
+  });
   assert.equal(reg.status, 201);
   const { token } = reg.body;
 
@@ -67,9 +73,14 @@ test('inscription, partie sauvegardée, points de restauration et rapport', asyn
   assert.ok(g0.body.state.startedAt, 'la partie invitée a été reprise');
 
   const actions = [
-    { type: 'tagLog', line: 2 }, { type: 'tagLog', line: 6 }, { type: 'tagLog', line: 7 }, { type: 'tagLog', line: 10 },
+    { type: 'tagLog', line: 2 },
+    { type: 'tagLog', line: 6 },
+    { type: 'tagLog', line: 7 },
+    { type: 'tagLog', line: 10 },
     { type: 'answerQ1', choice: 1 },
-    { type: 'setRecipe', ops: ['b64', 'rot'] }, { type: 'markEntity', entity: 'ip' }, { type: 'markEntity', entity: 'hr' },
+    { type: 'setRecipe', ops: ['b64', 'rot'] },
+    { type: 'markEntity', entity: 'ip' },
+    { type: 'markEntity', entity: 'hr' },
     ...['a', 'b', 'c', 'd', 'e'].map((card, slot) => ({ type: 'placeCard', card, slot })),
     { type: 'checkChain' },
   ];
@@ -120,4 +131,59 @@ test('formulaire de contact validé côté serveur', async () => {
 test('route inconnue → 404 JSON', async () => {
   const r = await call('GET', '/nope');
   assert.equal(r.status, 404);
+});
+
+test('changement de mot de passe : ancien exigé, autres sessions fermées', async () => {
+  const reg = await call('POST', '/auth/register', { username: 'pw_user', password: 'ancien-mot-de-passe' });
+  const other = await call('POST', '/auth/login', { username: 'pw_user', password: 'ancien-mot-de-passe' });
+  const bad = await call(
+    'PATCH',
+    '/auth/password',
+    { current: 'faux-mot-de-passe', next: 'nouveau-mot-de-passe' },
+    reg.body.token,
+  );
+  assert.equal(bad.status, 401);
+  const short = await call(
+    'PATCH',
+    '/auth/password',
+    { current: 'ancien-mot-de-passe', next: 'court' },
+    reg.body.token,
+  );
+  assert.equal(short.status, 400);
+  const ok = await call(
+    'PATCH',
+    '/auth/password',
+    { current: 'ancien-mot-de-passe', next: 'nouveau-mot-de-passe' },
+    reg.body.token,
+  );
+  assert.equal(ok.status, 204);
+  assert.equal(
+    (await call('GET', '/auth/me', undefined, reg.body.token)).status,
+    200,
+    'la session courante reste ouverte',
+  );
+  assert.equal(
+    (await call('GET', '/auth/me', undefined, other.body.token)).status,
+    401,
+    'les autres sessions sont fermées',
+  );
+  assert.equal(
+    (await call('POST', '/auth/login', { username: 'pw_user', password: 'nouveau-mot-de-passe' })).status,
+    200,
+  );
+});
+
+test('classement : meilleur score par analyste, sans données privées', async () => {
+  const { status, body } = await call('GET', '/leaderboard');
+  assert.equal(status, 200);
+  assert.ok(Array.isArray(body.entries));
+  assert.equal(body.entries[0].username, 'agent_0417');
+  assert.equal(body.entries[0].score, 100);
+  assert.ok(!('user_id' in body.entries[0]) && !('sha256' in body.entries[0]));
+  assert.equal(body.players, 1);
+});
+
+test('les réponses sont compressées en gzip', async () => {
+  const res = await fetch(`${base}/scenario`, { headers: { 'Accept-Encoding': 'gzip' } });
+  assert.equal(res.headers.get('content-encoding'), 'gzip');
 });

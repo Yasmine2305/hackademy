@@ -120,16 +120,25 @@ export const LOGS = [
 
 export const CARDS = {
   a: { id: 'T1110', n: 'Force brute', d: 'Rafale de mots de passe sur le compte root.', r: 'auth.log L2–4' },
-  b: { id: 'T1078', n: 'Compte valide', d: 'Connexion réussie avec svc-backup depuis l’IP attaquante.', r: 'auth.log L7' },
+  b: {
+    id: 'T1078',
+    n: 'Compte valide',
+    d: 'Connexion réussie avec svc-backup depuis l’IP attaquante.',
+    r: 'auth.log L7',
+  },
   c: { id: 'T1560', n: 'Archivage', d: 'Compression de /var/backups/clients dans /tmp.', r: 'auth.log L9' },
-  d: { id: 'T1048', n: 'Exfiltration', d: 'Envoi de l’archive : le paquet 0x7F3A se perd en route.', r: 'auth.log L10' },
+  d: {
+    id: 'T1048',
+    n: 'Exfiltration',
+    d: 'Envoi de l’archive : le paquet 0x7F3A se perd en route.',
+    r: 'auth.log L10',
+  },
   e: { id: 'T1070', n: 'Effacement', d: 'Suppression de l’historique des commandes.', r: 'auth.log L11' },
 };
 /** Ordre d'affichage (mélangé) des cartes dans la réserve. */
 export const CARD_POOL = ['c', 'a', 'e', 'b', 'd'];
 
-export const B64_MESSAGE =
-  'bmVwdXZpciBjZXJnci4gcG5hbnk6IGZpcC1vbnB4aGMgLT4gMTk4LjUxLjEwMC4yMy4gc3JhcmdlciAyM3U0Ny4=';
+export const B64_MESSAGE = 'bmVwdXZpciBjZXJnci4gcG5hbnk6IGZpcC1vbnB4aGMgLT4gMTk4LjUxLjEwMC4yMy4gc3JhcmdlciAyM3U0Ny4=';
 
 export const OPERATIONS = ['b64', 'rot', 'hex', 'cae', 'url'];
 

@@ -9,11 +9,14 @@ export function ToastProvider({ children }) {
   const seq = useRef(0);
 
   const dismiss = useCallback((id) => setToasts((t) => t.filter((x) => x.id !== id)), []);
-  const notify = useCallback((kind, text, ms = 4200) => {
-    const id = ++seq.current;
-    setToasts((t) => [...t.slice(-3), { id, kind, text }]);
-    setTimeout(() => dismiss(id), ms);
-  }, [dismiss]);
+  const notify = useCallback(
+    (kind, text, ms = 4200) => {
+      const id = ++seq.current;
+      setToasts((t) => [...t.slice(-3), { id, kind, text }]);
+      setTimeout(() => dismiss(id), ms);
+    },
+    [dismiss],
+  );
 
   const value = useMemo(() => ({ notify, dismiss }), [notify, dismiss]);
   return (

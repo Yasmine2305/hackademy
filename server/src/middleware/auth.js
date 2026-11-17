@@ -18,7 +18,10 @@ export function requireAuth(req, res, next) {
  * Limiteur très simple, en mémoire : `max` requêtes par fenêtre de `windowMs`
  * pour une même adresse. Suffisant pour freiner la force brute sur /login.
  */
-export function rateLimit({ windowMs, max }) {
+export function rateLimit({ windowMs, max: baseMax }) {
+  // RATE_LIMIT_FACTOR (défaut 1) n'est relevé que par les tests multi-navigateurs,
+  // qui enchaînent des dizaines d'inscriptions depuis la même machine.
+  const max = baseMax * (Number(process.env.RATE_LIMIT_FACTOR) || 1);
   const hits = new Map();
   return function limit(req, res, next) {
     const key = req.ip;

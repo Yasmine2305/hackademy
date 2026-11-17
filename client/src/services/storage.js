@@ -11,13 +11,24 @@ function read(key, fallback) {
   }
 }
 function write(key, value) {
-  try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* stockage indisponible */ }
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    /* stockage indisponible */
+  }
 }
 
 export const guestStore = {
   load: () => read(GAME_KEY, null),
   save: (state) => write(GAME_KEY, state),
-  clear() { try { localStorage.removeItem(GAME_KEY); localStorage.removeItem(SNAP_KEY); } catch { /* */ } },
+  clear() {
+    try {
+      localStorage.removeItem(GAME_KEY);
+      localStorage.removeItem(SNAP_KEY);
+    } catch {
+      /* */
+    }
+  },
 
   snapshots: () => read(SNAP_KEY, []),
   addSnapshot(label, state, keep = 3) {

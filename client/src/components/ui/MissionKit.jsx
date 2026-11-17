@@ -19,7 +19,9 @@ export function MissionTabs({ current }) {
         const cls = on ? 'on' : view.missions[n].solved ? 'done' : undefined;
         return (
           <NavLink key={n} to={to} className={cls} aria-current={on ? 'page' : undefined}>
-            {n}:{name}{on ? '*' : ''}<small>{view.missions[n].done}/4</small>
+            {n}:{name}
+            {on ? '*' : ''}
+            <small>{view.missions[n].done}/4</small>
           </NavLink>
         );
       })}
@@ -45,7 +47,8 @@ export function HintPane({ mission }) {
                 disabled={busy && !text}
                 onClick={() => !text && dispatch({ type: 'useHint', mission, index: i })}
               >
-                Indice {i + 1}<span>{text ? 'utilisé' : '−5 pts'}</span>
+                Indice {i + 1}
+                <span>{text ? 'utilisé' : '−5 pts'}</span>
               </button>
               {text && <p>{text}</p>}
             </div>

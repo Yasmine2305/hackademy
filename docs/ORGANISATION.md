@@ -32,3 +32,6 @@ une carte par page ou par route d’API.
 - **Objectif 2** : sitemap, maquettes basse et haute fidélité, charte, prototype HTML/JS.
 - **Objectif 3** : passage en React + Express + SQLite ; réponses vérifiées côté serveur,
   comptes, sauvegardes, points de restauration, rapports signés, formulaire de contact, tests.
+- **Objectif 4** : composants réutilisables (Button, Field, Skeleton…), classement et changement de
+  mot de passe, états de chargement, navigation tablette, accessibilité 100, optimisation des
+  performances (gzip, 3D différée, polices locales), ESLint + Prettier. Voir `OBJECTIF4.md`.

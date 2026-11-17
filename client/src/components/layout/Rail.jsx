@@ -30,7 +30,9 @@ export default function Rail() {
         <span className="lbl">paquet 0x7F3A</span>
         <Cells found={view.found} fresh={fresh} />
         <span className="ascii">{view.found.map((f, i) => (f ? f.ch : <em key={i}>·</em>))}</span>
-        <span className="cnt">{view.count}/12 octets · {view.score} pts</span>
+        <span className="cnt">
+          {view.count}/12 octets · {view.score} pts
+        </span>
       </div>
     </div>
   );

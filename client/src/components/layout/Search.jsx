@@ -4,7 +4,12 @@ import { useGame } from '../../context/GameContext.jsx';
 import { ROUTES } from '../../routes.js';
 
 /** Où mène chaque terme du glossaire. */
-const GLOSS_PAGE = { Base64: '/centre/mission-2', ROT13: '/centre/mission-2', 'MITRE ATT&CK': '/centre/mission-3', 'Kill chain': '/centre/mission-3' };
+const GLOSS_PAGE = {
+  Base64: '/centre/mission-2',
+  ROT13: '/centre/mission-2',
+  'MITRE ATT&CK': '/centre/mission-3',
+  'Kill chain': '/centre/mission-3',
+};
 
 /**
  * « grep le dossier » : recherche instantanée dans les pages, le glossaire et les journaux.
@@ -33,12 +38,15 @@ export default function Search() {
     const v = q.trim().toLowerCase();
     if (!v) return [];
     const out = [];
-    ROUTES.forEach((r) => { if (r.title.toLowerCase().includes(v)) out.push({ to: r.path, label: r.title, sub: 'page' }); });
+    ROUTES.forEach((r) => {
+      if (r.title.toLowerCase().includes(v)) out.push({ to: r.path, label: r.title, sub: 'page' });
+    });
     Object.entries(scenario?.glossary || {}).forEach(([k, d]) => {
       if ((k + d).toLowerCase().includes(v)) out.push({ to: GLOSS_PAGE[k] || '/centre/mission-1', label: k, sub: d });
     });
     (scenario?.logs || []).forEach((l) => {
-      if (l.join(' ').toLowerCase().includes(v)) out.push({ to: '/centre/mission-1', label: `auth.log L${l[0]} · ${l[2]}`, sub: l[4] });
+      if (l.join(' ').toLowerCase().includes(v))
+        out.push({ to: '/centre/mission-1', label: `auth.log L${l[0]} · ${l[2]}`, sub: l[4] });
     });
     return out.slice(0, 6);
   }, [q, scenario]);
@@ -51,10 +59,19 @@ export default function Search() {
   }
 
   function onKeyDown(e) {
-    if (e.key === 'Escape') { setOpen(false); input.current.blur(); }
-    else if (e.key === 'ArrowDown') { e.preventDefault(); setActive((a) => Math.min(a + 1, hits.length - 1)); }
-    else if (e.key === 'ArrowUp') { e.preventDefault(); setActive((a) => Math.max(a - 1, 0)); }
-    else if (e.key === 'Enter' && hits[active]) { e.preventDefault(); go(hits[active]); }
+    if (e.key === 'Escape') {
+      setOpen(false);
+      input.current.blur();
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setActive((a) => Math.min(a + 1, hits.length - 1));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setActive((a) => Math.max(a - 1, 0));
+    } else if (e.key === 'Enter' && hits[active]) {
+      e.preventDefault();
+      go(hits[active]);
+    }
   }
 
   return (
@@ -69,25 +86,39 @@ export default function Search() {
         role="combobox"
         aria-expanded={open && !!q}
         aria-controls="grep-results"
-        onChange={(e) => { setQ(e.target.value); setOpen(true); setActive(0); }}
+        onChange={(e) => {
+          setQ(e.target.value);
+          setOpen(true);
+          setActive(0);
+        }}
         onFocus={() => setOpen(true)}
         onBlur={() => setTimeout(() => setOpen(false), 150)}
         onKeyDown={onKeyDown}
       />
       {open && q.trim() && (
         <div className="results" id="grep-results" role="listbox">
-          {hits.length ? hits.map((h, i) => (
-            <a
-              key={h.label + i}
-              href={h.to}
-              role="option"
-              aria-selected={i === active}
-              style={i === active ? { background: 'var(--raise2)' } : undefined}
-              onMouseDown={(e) => { e.preventDefault(); go(h); }}
-            >
-              {h.label}<small>{h.sub}</small>
+          {hits.length ? (
+            hits.map((h, i) => (
+              <a
+                key={h.label + i}
+                href={h.to}
+                role="option"
+                aria-selected={i === active}
+                style={i === active ? { background: 'var(--raise2)' } : undefined}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  go(h);
+                }}
+              >
+                {h.label}
+                <small>{h.sub}</small>
+              </a>
+            ))
+          ) : (
+            <a role="option" aria-selected="false">
+              Aucun résultat
             </a>
-          )) : <a role="option" aria-selected="false">Aucun résultat</a>}
+          )}
         </div>
       )}
     </label>

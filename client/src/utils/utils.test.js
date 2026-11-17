@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { runRecipe, OPS } from './decoders.js';
 import { formatDuration, elapsed, plural } from './format.js';
-import { identRows } from './pixels.js';
+import { identRows } from '../assets/pixels.js';
 
 const MESSAGE = 'bmVwdXZpciBjZXJnci4gcG5hbnk6IGZpcC1vbnB4aGMgLT4gMTk4LjUxLjEwMC4yMy4gc3JhcmdlciAyM3U0Ny4=';
 
@@ -44,5 +44,18 @@ describe('avatars', () => {
     expect(a).toEqual(identRows('agent_0417'));
     expect(a).toHaveLength(8);
     a.forEach((row) => expect(row).toBe(row.split('').reverse().join('')));
+  });
+});
+
+describe('mise à l’échelle des grands écrans', async () => {
+  const { computeScale } = await import('./uiScale.js');
+  it('ne change rien jusqu’à 1 600 px', () => {
+    expect(computeScale(375)).toBe(1);
+    expect(computeScale(1536)).toBe(1);
+  });
+  it('agrandit en proportion au-delà, avec un maximum de 3', () => {
+    expect(computeScale(1920)).toBeCloseTo(1.2);
+    expect(computeScale(3840)).toBeCloseTo(2.4);
+    expect(computeScale(10000)).toBe(3);
   });
 });

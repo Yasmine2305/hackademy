@@ -1,6 +1,6 @@
 # Hackademy — The Missing Packet
 
-> Projet Web · Objectif 3 · Groupe 2 · SUP’COM 2026-2027
+> Projet Web · Objectifs 3 et 4 · Groupe 2 · SUP’COM 2026-2027
 > Yasmine Sellami · Ameni Kharrat
 
 > ### ▶ Lancer le site en 30 secondes (Windows)
@@ -20,6 +20,11 @@ il révèle le verdict et débloque le rapport d’incident.
 Ce dépôt est la version développée des maquettes de l’objectif 2 : 11 pages dynamiques,
 un frontend React complet et un backend Node.js qui vérifie les réponses, calcule le score et
 sauvegarde la progression.
+
+**Objectif 4 (finalisation et optimisation)** : composants réutilisables, classement et
+changement de mot de passe, états de chargement, navigation tablette, accessibilité 100/100,
+performances optimisées (gzip, 3D chargée à la demande, polices locales), ESLint et Prettier.
+Le détail, avec les scores Lighthouse avant/après, est dans [`docs/OBJECTIF4.md`](docs/OBJECTIF4.md).
 
 ---
 
@@ -50,8 +55,25 @@ npm run dev          # API sur :3001 et site Vite sur http://localhost:5173
 Tests automatisés :
 
 ```bash
-npm test             # 21 tests serveur (node:test) + 8 tests client (Vitest)
+npm test             # 24 tests serveur (node:test) + 10 tests client (Vitest)
 ```
+
+Qualité du code :
+
+```bash
+npm run lint         # ESLint : erreurs et mauvaises pratiques (doit afficher 0 problème)
+npm run format       # Prettier : met en forme tout le code de la même façon
+```
+
+Tests multi-navigateurs (Chrome, Edge, Chromium, Safari/WebKit, Firefox, Android, iPhone) :
+
+```bash
+npx playwright install chromium firefox webkit   # première fois seulement
+npm run test:e2e                                 # rapport : docs/tests-navigateurs/index.html
+```
+
+> **Adaptatif à tous les écrans** : de 375 px (téléphone) à 3 840 px (4K). Au-delà de 1 600 px, toute
+> l’interface s’agrandit en proportion pour remplir l’écran (`client/src/utils/uiScale.js`).
 
 Variables d’environnement facultatives : `PORT` (défaut `3001`), `DB_FILE`
 (défaut `server/data/hackademy.db`).
@@ -144,13 +166,16 @@ hackademy/
 │       ├── routes.js       sitemap : chemins, titres, menu
 │       ├── context/        AuthContext, GameContext, ToastContext
 │       ├── services/       api.js (client REST), storage.js (partie invitée)
-│       ├── hooks/          useTitle, useClock, useTilt…
+│       ├── hooks/          useTitle, useClock, useTilt, useAsync…
+│       ├── assets/         polices (fonts.js), icônes pixel et avatars (pixels.js)
 │       ├── components/
 │       │   ├── layout/     Header, Search, Rail, Footer, Layout
-│       │   ├── ui/         Pane, Tlp, Hexdump, Cells, MissionKit…
+│       │   ├── ui/         Button, Field, Skeleton, ErrorBoundary, Pane, MissionCard, Hexdump…
+│       │   ├── account/    AccountPanel (déconnexion, mot de passe, suppression)
+│       │   ├── progress/   Leaderboard (classement)
 │       │   └── three/      engine.js (scènes Three.js), Scene.jsx, Ambient.jsx
 │       ├── pages/          une page = un fichier
-│       ├── utils/          décodeurs, formatage, icônes pixel (+ tests Vitest)
+│       ├── utils/          décodeurs, formatage (+ tests Vitest)
 │       └── styles/         charte « PCAP 3D » (global.css) + ajouts
 ├── server/                 backend Node.js (Express)
 │   ├── src/
@@ -161,8 +186,12 @@ hackademy/
 │   │   ├── middleware/     auth.js (jetons, limiteur)
 │   │   └── db/             database.js (schéma SQLite + requêtes)
 │   └── test/               engine.test.js, api.test.js
+├── eslint.config.mjs       règles ESLint (qualité du code)
+├── .prettierrc.json        règles Prettier (mise en forme)
 └── docs/
     ├── API.md              référence de l'API REST
+    ├── OBJECTIF4.md        rapport de l'objectif 4 (optimisations, scores avant/après)
+    ├── lighthouse/         rapports Lighthouse finaux (à ouvrir dans un navigateur)
     └── ORGANISATION.md     répartition des tâches, conventions Git
 ```
 

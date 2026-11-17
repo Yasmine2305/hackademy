@@ -20,7 +20,10 @@ export default function Layout() {
   useEffect(() => {
     if (hash) {
       const el = document.getElementById(hash.slice(1));
-      if (el) { el.scrollIntoView(); return; }
+      if (el) {
+        el.scrollIntoView();
+        return;
+      }
     }
     window.scrollTo(0, 0);
   }, [pathname, hash]);

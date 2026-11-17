@@ -1,6 +1,7 @@
 /* Petits composants d'interface réutilisés sur toutes les pages. */
 import { Fragment } from 'react';
 import { Link } from 'react-router-dom';
+import { PageSkeleton } from './Skeleton.jsx';
 
 /** Étiquette du Traffic Light Protocol : clear, green, amber, red. */
 export function Tlp({ level }) {
@@ -22,7 +23,7 @@ export function Pane({ title, right, className = '', as: Tag = 'div', children, 
     <Tag className={`pane${className ? ` ${className}` : ''}`} {...rest}>
       <i className="led" />
       <i className="hl" />
-      <div className="t">{title}</div>
+      <h2 className="t">{title}</h2>
       {right != null && <div className="r">{right}</div>}
       {children}
     </Tag>
@@ -34,7 +35,9 @@ export function PageHead({ title, crumb, tlp, lead }) {
   return (
     <div className="phead">
       <div>
-        <div className="crumb"><b>~</b>/{crumb}</div>
+        <div className="crumb">
+          <b>~</b>/{crumb}
+        </div>
         <h1>{title}</h1>
         {lead && <p className="lead">{lead}</p>}
       </div>
@@ -48,9 +51,15 @@ export function PixelIcon({ rows, size = 40, color = 'var(--green)' }) {
   const c = size / rows.length;
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden="true">
-      {rows.flatMap((r, y) => r.split('').map((b, x) => (b === '1'
-        ? <rect key={`${x}-${y}`} x={x * c} y={y * c} width={c} height={c} style={{ fill: color }} />
-        : null)))}
+      {rows.flatMap((r, y) =>
+        r
+          .split('')
+          .map((b, x) =>
+            b === '1' ? (
+              <rect key={`${x}-${y}`} x={x * c} y={y * c} width={c} height={c} style={{ fill: color }} />
+            ) : null,
+          ),
+      )}
     </svg>
   );
 }
@@ -63,9 +72,11 @@ export function Cells({ found, fresh = [] }) {
       {found.map((f, i) => (
         <Fragment key={i}>
           {(i === 4 || i === 8) && <i className="sep" />}
-          {f
-            ? <span className={`cell ok${fresh.includes(i) ? ' fresh' : ''}`}>{f.hex}</span>
-            : <span className="cell no">??</span>}
+          {f ? (
+            <span className={`cell ok${fresh.includes(i) ? ' fresh' : ''}`}>{f.hex}</span>
+          ) : (
+            <span className="cell no">??</span>
+          )}
         </Fragment>
       ))}
     </div>
@@ -77,20 +88,32 @@ export function MissionDone({ n, solved, to, label }) {
   if (!solved) return null;
   return (
     <div className="toast" role="status">
-      <p><b className="c-g m">MISSION {n} RÉSOLUE.</b> Quatre octets de plus pour le paquet.</p>
-      <Link className="btn go sm" to={to}>{label} <kbd>↵</kbd></Link>
+      <p>
+        <b className="c-g m">MISSION {n} RÉSOLUE.</b> Quatre octets de plus pour le paquet.
+      </p>
+      <Link className="btn go sm" to={to}>
+        {label} <kbd>↵</kbd>
+      </Link>
     </div>
   );
 }
 
 /** Message d'attente ou d'erreur pendant le chargement de l'API. */
-export function Loading({ error }) {
+export function Loading({ error, onRetry }) {
+  if (!error) return <PageSkeleton />;
   return (
     <main id="main">
       <div className="wrap" style={{ padding: '80px 0' }}>
-        {error
-          ? <div className="toast err"><p><b className="c-r m">[err]</b> {error}</p></div>
-          : <p className="m c-m">$ chargement du dossier #0417<span className="caret" /></p>}
+        <div className="toast err" role="alert">
+          <p>
+            <b className="c-r m">[err]</b> {error}
+          </p>
+          {onRetry && (
+            <button type="button" className="btn sm" onClick={onRetry}>
+              Réessayer
+            </button>
+          )}
+        </div>
       </div>
     </main>
   );

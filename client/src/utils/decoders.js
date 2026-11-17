@@ -25,7 +25,10 @@ export const OPS = {
     run(s) {
       const h = s.replace(/\s/g, '');
       if (!/^([0-9a-f]{2})+$/i.test(h)) throw new Error('format');
-      return h.match(/../g).map((x) => String.fromCharCode(parseInt(x, 16))).join('');
+      return h
+        .match(/../g)
+        .map((x) => String.fromCharCode(parseInt(x, 16)))
+        .join('');
     },
   },
   cae: { name: 'César −3', run: shift(23) },

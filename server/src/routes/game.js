@@ -6,7 +6,10 @@ import { publicScenario, WORD } from '../game/scenario.js';
 
 /** Empreinte SHA-256 du rapport signé : rejouable et vérifiable. */
 export function reportHash({ username, score, finishedAt }) {
-  return crypto.createHash('sha256').update(JSON.stringify({ case: '0417', username, score, word: WORD, finishedAt })).digest('hex');
+  return crypto
+    .createHash('sha256')
+    .update(JSON.stringify({ case: '0417', username, score, word: WORD, finishedAt }))
+    .digest('hex');
 }
 
 export function gameRoutes(repo) {
@@ -37,9 +40,7 @@ export function gameRoutes(repo) {
    */
   r.post('/game/action', (req, res) => {
     const action = req.body?.action;
-    const current = req.user
-      ? (repo.getProgress(req.user.id)?.state ?? blankState())
-      : req.body?.state;
+    const current = req.user ? (repo.getProgress(req.user.id)?.state ?? blankState()) : req.body?.state;
     const { state, events, milestones } = applyAction(current, action);
     const view = buildView(state);
     let savedAt = null;
@@ -52,7 +53,9 @@ export function gameRoutes(repo) {
           ? Math.max(0, Math.round((Date.parse(state.finishedAt) - Date.parse(state.startedAt)) / 1000))
           : null;
         repo.addReport(req.user.id, {
-          caseId: '0417', score, durationS,
+          caseId: '0417',
+          score,
+          durationS,
           sha256: reportHash({ username: req.user.username, score, finishedAt: state.finishedAt }),
         });
       }
@@ -75,6 +78,13 @@ export function gameRoutes(repo) {
 
   r.get('/progress/reports', requireAuth, (req, res) => {
     res.json({ reports: repo.listReports(req.user.id) });
+  });
+
+  /** Classement public : meilleur rapport de chaque analyste (aucune donnée privée). */
+  r.get('/leaderboard', (req, res) => {
+    const limit = Math.min(Math.max(Number(req.query.limit) || 10, 1), 50);
+    res.set('Cache-Control', 'no-cache');
+    res.json(repo.leaderboard(limit));
   });
 
   return r;

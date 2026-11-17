@@ -13,7 +13,8 @@ export const ROUTES = [
   { path: '/charte', title: 'Charte graphique', section: null },
 ];
 
-export const routeFor = (pathname) => ROUTES.find((r) => r.path === pathname.replace(/\/$/, '') || (r.path === '/' && pathname === '/'));
+export const routeFor = (pathname) =>
+  ROUTES.find((r) => r.path === pathname.replace(/\/$/, '') || (r.path === '/' && pathname === '/'));
 
 /** Menu principal (desktop) et barre d'onglets (mobile). */
 export const NAV = [
@@ -22,5 +23,5 @@ export const NAV = [
   ['/centre', 'centre', 'centre'],
   ['/rapport', 'rapport', 'rapport'],
   ['/progression', 'progression', 'profil'],
-  ['/a-propos', 'apropos', 'à propos'],
+  ['/a-propos', 'apropos', 'infos'],
 ];
